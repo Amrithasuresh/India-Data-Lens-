@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Data Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #0D1B2A;
+    --navy2:  #122236;
+    --navy3:  #1C3450;
+    --saffron:#E8871A;
+    --saffron-lt:#F5A94A;
+    --cream:  #F7F3EC;
+    --cream2: #EDE7DB;
+    --white:  #FFFFFF;
+    --muted:  #8A99AA;
+    --border: rgba(255,255,255,0.08);
+    --border-lt: rgba(13,27,42,0.10);
+    --green:  #2E9E6B;
+    --red:    #C94040;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,27,42,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2.5rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--saffron);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--navy);
+    letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--white);
+    letter-spacing: 0.01em;
+  }
+
+  .logo-text span { color: var(--saffron); }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  nav a {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--cream); }
+
+  .nav-badge {
+    font-size: 0.65rem;
+    background: var(--saffron);
+    color: var(--navy);
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    padding: 7rem 2.5rem 5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    top: 2rem;
+    right: -2rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 13rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.025);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -4px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--saffron);
+    border: 1px solid rgba(232,135,26,0.3);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 1.8rem;
+  }
+
+  .hero-tag-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--saffron);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.08;
+    color: var(--white);
+    max-width: 700px;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--saffron);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hero-stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--white);
+  }
+
+  .hero-stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+    align-self: center;
+  }
+
+  /* ── DIVIDER LINE ── */
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3.5rem 2.5rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--saffron);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+
+  .section-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* ── PROJECT CARDS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .project-card {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+  }
+
+  .project-card:hover {
+    border-color: rgba(232,135,26,0.35);
+    transform: translateY(-3px);
+  }
+
+  .project-card.featured {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+
+  .card-visual {
+    background: var(--navy3);
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card.featured .card-visual {
+    width: 340px;
+    height: auto;
+    min-height: 220px;
+  }
+
+  /* mini chart inside card */
+  .mini-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 80px;
+    padding: 0 1rem;
+  }
+
+  .mini-bar {
+    width: 14px;
+    border-radius: 3px 3px 0 0;
+    background: var(--saffron);
+    opacity: 0.7;
+    animation: grow 0.8s ease-out forwards;
+    transform-origin: bottom;
+  }
+
+  @keyframes grow {
+    from { transform: scaleY(0); opacity: 0; }
+    to   { transform: scaleY(1); opacity: 0.7; }
+  }
+
+  .mini-map {
+    width: 120px;
+    height: 100px;
+    opacity: 0.4;
+  }
+
+  .card-accent-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--saffron), transparent);
+  }
+
+  .card-body {
+    padding: 1.4rem 1.6rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 0.85rem;
+  }
+
+  .card-tag {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+  }
+
+  .card-tag.law    { background: rgba(232,135,26,0.12); color: var(--saffron-lt); }
+  .card-tag.tn     { background: rgba(46,158,107,0.12); color: #5DD09B; }
+  .card-tag.coming { background: rgba(255,255,255,0.04); color: #556677; }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .card-desc {
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.65;
+    flex: 1;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: #445566;
+  }
+
+  .card-arrow {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .project-card:hover .card-arrow {
+    background: var(--saffron);
+    color: var(--navy);
+    border-color: var(--saffron);
+  }
+
+  .coming-soon-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(13,27,42,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #445566;
+    font-weight: 500;
+  }
+
+  /* ── ABOUT STRIP ── */
+  .about-strip {
+    background: var(--navy2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .about-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .about-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .about-body {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .about-body p + p { margin-top: 0.75rem; }
+
+  .about-pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .pillar {
+    background: var(--navy3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+  }
+
+  .pillar-icon {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .pillar-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+
+  .pillar-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-left {
+    font-size: 0.78rem;
+    color: #445566;
+  }
+
+  .footer-right {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-right a {
+    font-size: 0.78rem;
+    color: #445566;
+    text-decoration: none;
+  }
+
+  .footer-right a:hover { color: var(--muted); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    header { padding: 0 1.2rem; }
+    nav { display: none; }
+    .hero { padding: 4rem 1.2rem 3rem; }
+    .hero-bg-text { font-size: 6rem; }
+    .section-wrap { padding: 2.5rem 1.2rem; }
+    .project-card.featured { flex-direction: column; }
+    .project-card.featured .card-visual { width: 100%; min-height: 160px; }
+    .about-inner { grid-template-columns: 1fr; gap: 2rem; }
+    footer { padding: 1.5rem 1.2rem; }
+    .hero-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="/">
+    <div class="logo-mark">IL</div>
+    <span class="logo-text">India<span> Data Lens</span></span>
+  </a>
+  <nav>
+    <a href="#projects">Projects</a>
+    <a href="#about">About</a>
+    <a href="goondas-act-india/">Goondas Act <span class="nav-badge">New</span></a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-text">DATA</div>
+
+  <div class="hero-tag">
+    <span class="hero-tag-dot"></span>
+    India · State-Level · Open Data
+  </div>
+
+  <h1>Data that makes <em>India</em> legible.</h1>
+
+  <p class="hero-sub">
+    Visualizations built on government data — NCRB, Census, MOSPI, Election Commission — focused on India and Tamil Nadu. Built for researchers, journalists, and curious citizens.
+  </p>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-num">1</span>
+      <span class="hero-stat-label">Live dataset</span>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">36</span>
+      <span class="hero-stat-label">States & UTs covered</span>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">NCRB</span>
+      <span class="hero-stat-label">Primary source</span>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- PROJECTS -->
+<section class="section-wrap" id="projects">
+  <div class="section-header">
+    <div>
+      <p class="section-label">Datasets</p>
+      <h2 class="section-title">Visualizations</h2>
+    </div>
+    <span class="section-count">1 live · 4 coming soon</span>
+  </div>
+
+  <div class="projects-grid">
+
+    <!-- FEATURED: Goondas Act -->
+    <a class="project-card featured" href="goondas-act-india/">
+      <div class="card-visual">
+        <div class="card-accent-line"></div>
+        <div class="mini-bars">
+          <div class="mini-bar" style="height:30%;animation-delay:0.0s"></div>
+          <div class="mini-bar" style="height:38%;animation-delay:0.05s"></div>
+          <div class="mini-bar" style="height:31%;animation-delay:0.1s"></div>
+          <div class="mini-bar" style="height:52%;animation-delay:0.15s"></div>
+          <div class="mini-bar" style="height:60%;animation-delay:0.2s"></div>
+          <div class="mini-bar" style="height:100%;animation-delay:0.25s;background:#C94040;opacity:0.9;"></div>
+        </div>
+        <div style="position:absolute;bottom:12px;left:1rem;font-family:'DM Mono',monospace;font-size:0.65rem;color:#445566;">2017 → 2021</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag law">Criminal Law</span>
+          <span class="card-tag tn">Tamil Nadu</span>
+          <span class="card-tag">NCRB</span>
+          <span class="card-tag">Preventive Detention</span>
+        </div>
+        <h3 class="card-title">Goondas Act — Preventive Detentions in India</h3>
+        <p class="card-desc">
+          State-wise detention data under Goondas Acts and related preventive detention laws across India. Tamil Nadu alone accounts for 51.2% of all detentions nationally. Includes age, education, and caste profiles of detenus from NCRB Prison Statistics India.
+        </p>
+        <div class="card-footer">
+          <span class="card-meta">NCRB · TN SCRB · 2017–2021</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- COMING SOON: Election -->
+    <div class="project-card" style="cursor:default;">
+      <div class="card-visual">
+        <div class="coming-soon-overlay">Coming soon</div>
+        <svg class="mini-map" viewBox="0 0 100 80" fill="none">
+          <ellipse cx="50" cy="45" rx="38" ry="30" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+          <circle cx="38" cy="38" r="6" fill="rgba(255,255,255,0.06)"/>
+          <circle cx="55" cy="32" r="8" fill="rgba(255,255,255,0.06)"/>
+          <circle cx="62" cy="52" r="5" fill="rgba(255,255,255,0.06)"/>
+          <circle cx="42" cy="55" r="7" fill="rgba(255,255,255,0.06)"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag coming">Elections</span>
+          <span class="card-tag coming">State Assembly</span>
+        </div>
+        <h3 class="card-title" style="color:#445566;">Tamil Nadu Election Results</h3>
+        <p class="card-desc" style="color:#334455;">
+          Constituency-wise results, vote share trends, and party performance across Tamil Nadu assembly elections.
+        </p>
+        <div class="card-footer">
+          <span class="card-meta" style="color:#334455;">ECI · 2001–2021</span>
+          <div class="card-arrow" style="border-color:#223344;color:#334455;">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMING SOON: Health -->
+    <div class="project-card" style="cursor:default;">
+      <div class="card-visual">
+        <div class="coming-soon-overlay">Coming soon</div>
+        <div class="mini-bars" style="height:60px;">
+          <div style="width:100%;height:2px;background:rgba(255,255,255,0.04);margin-bottom:8px;"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag coming">Health</span>
+          <span class="card-tag coming">NFHS</span>
+        </div>
+        <h3 class="card-title" style="color:#445566;">Health Indicators — NFHS Data</h3>
+        <p class="card-desc" style="color:#334455;">
+          District-level health and nutrition indicators from NFHS-5. Malnutrition, anaemia, and institutional delivery rates across Indian states.
+        </p>
+        <div class="card-footer">
+          <span class="card-meta" style="color:#334455;">NFHS-5 · 2019–21</span>
+          <div class="card-arrow" style="border-color:#223344;color:#334455;">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMING SOON: Census -->
+    <div class="project-card" style="cursor:default;">
+      <div class="card-visual">
+        <div class="coming-soon-overlay">Coming soon</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag coming">Census</span>
+          <span class="card-tag coming">Demographics</span>
+        </div>
+        <h3 class="card-title" style="color:#445566;">Census Demographics — District View</h3>
+        <p class="card-desc" style="color:#334455;">
+          Population, literacy, sex ratio, and urbanisation trends from Census 2011. District-level choropleth maps for every state.
+        </p>
+        <div class="card-footer">
+          <span class="card-meta" style="color:#334455;">Census 2011 · RGI</span>
+          <div class="card-arrow" style="border-color:#223344;color:#334455;">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMING SOON: Crime -->
+    <div class="project-card" style="cursor:default;">
+      <div class="card-visual">
+        <div class="coming-soon-overlay">Coming soon</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag coming">Crime</span>
+          <span class="card-tag coming">NCRB</span>
+        </div>
+        <h3 class="card-title" style="color:#445566;">Crime Rate Trends — State Comparison</h3>
+        <p class="card-desc" style="color:#334455;">
+          IPC and SLL crime rates per lakh population across all states and UTs. Year-on-year trend analysis from NCRB Crime in India reports.
+        </p>
+        <div class="card-footer">
+          <span class="card-meta" style="color:#334455;">NCRB · 2015–2023</span>
+          <div class="card-arrow" style="border-color:#223344;color:#334455;">→</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ABOUT -->
+<section class="about-strip" id="about">
+  <div class="about-inner">
+    <div>
+      <p class="section-label" style="margin-bottom:0.6rem;">About</p>
+      <h2 class="about-title">Why this exists</h2>
+      <div class="about-body">
+        <p>India produces some of the most detailed government data in the world — NCRB, Census, NFHS, ECI, MOSPI. It is also notoriously hard to access, scattered across PDFs, poorly indexed, and rarely visualised in one place.</p>
+        <p>India Data Lens is a personal project to change that. Each page takes one dataset, extracts the numbers, and builds an interactive visual that makes the data readable and shareable.</p>
+        <p>Tamil Nadu is a special focus — it is consistently both a data-rich state and an outlier in many national statistics.</p>
+      </div>
+    </div>
+    <div class="about-pillars">
+      <div class="pillar">
+        <div class="pillar-icon">🏛️</div>
+        <div class="pillar-title">Primary sources only</div>
+        <div class="pillar-desc">NCRB, Census, ECI, NFHS. No aggregators. Direct from government publications.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🗺️</div>
+        <div class="pillar-title">State-level depth</div>
+        <div class="pillar-desc">National averages hide state-level reality. Every dataset goes down to district level where possible.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">📂</div>
+        <div class="pillar-title">Data included</div>
+        <div class="pillar-desc">Every page ships with the underlying CSV files so you can download and use the data yourself.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🔗</div>
+        <div class="pillar-title">Fully cited</div>
+        <div class="pillar-desc">Every number links back to the source PDF, table number, and publication year.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-left">India Data Lens · Built with open government data</span>
+  <div class="footer-right">
+    <a href="goondas-act-india/">Goondas Act</a>
+    <a href="#projects">All projects</a>
+    <a href="goondas-act-india/docs/REFERENCES.md">References</a>
+  </div>
+</footer>
+
+</body>
+</html>
