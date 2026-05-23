@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goondas Act in India — Data Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8f7f4;
+    color: #1a1a18;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: #fff;
+    border-bottom: 1px solid #e5e3dc;
+    padding: 2rem 2rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #1a1a18;
+    margin-bottom: 0.35rem;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    color: #5f5e5a;
+    max-width: 680px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-right: 6px;
+    margin-top: 10px;
+  }
+  .tag-blue  { background: #E6F1FB; color: #185FA5; }
+  .tag-amber { background: #FAEEDA; color: #854F0B; }
+  .tag-green { background: #EAF3DE; color: #3B6D11; }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 3rem;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888780;
+    margin: 2rem 0 0.75rem;
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .metric {
+    background: #fff;
+    border: 1px solid #e5e3dc;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+  }
+
+  .metric-label {
+    font-size: 0.78rem;
+    color: #888780;
+    margin-bottom: 5px;
+  }
+
+  .metric-value {
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: #1a1a18;
+    line-height: 1.15;
+  }
+
+  .metric-sub {
+    font-size: 0.75rem;
+    color: #888780;
+    margin-top: 3px;
+  }
+
+  .metric-value.highlight { color: #D85A30; }
+
+  .chart-card {
+    background: #fff;
+    border: 1px solid #e5e3dc;
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .chart-card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a18;
+    margin-bottom: 0.25rem;
+  }
+
+  .chart-card .chart-sub {
+    font-size: 0.78rem;
+    color: #888780;
+    margin-bottom: 1rem;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 720px) {
+    .two-col { grid-template-columns: 1fr; }
+    header, main { padding-left: 1rem; padding-right: 1rem; }
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .bar-row-label {
+    font-size: 0.82rem;
+    color: #1a1a18;
+    min-width: 110px;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    background: #f1efe8;
+    border-radius: 4px;
+    height: 10px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease;
+  }
+
+  .bar-row-val {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1a1a18;
+    min-width: 52px;
+    text-align: right;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+  }
+
+  thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.76rem;
+    color: #888780;
+    padding: 6px 10px;
+    border-bottom: 1px solid #e5e3dc;
+  }
+
+  tbody td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #f1efe8;
+    color: #1a1a18;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #f8f7f4; }
+
+  .pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .pill-red   { background: #FCEBEB; color: #A32D2D; }
+  .pill-green { background: #EAF3DE; color: #3B6D11; }
+  .pill-blue  { background: #E6F1FB; color: #185FA5; }
+  .pill-amber { background: #FAEEDA; color: #854F0B; }
+  .pill-gray  { background: #F1EFE8; color: #5F5E5A; }
+
+  .ref-list { list-style: none; }
+
+  .ref-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f1efe8;
+    font-size: 0.84rem;
+  }
+
+  .ref-list li:last-child { border-bottom: none; }
+
+  .ref-num {
+    display: inline-block;
+    background: #f1efe8;
+    color: #5F5E5A;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .ref-list a {
+    color: #185FA5;
+    text-decoration: none;
+    font-size: 0.78rem;
+    display: block;
+    margin-top: 3px;
+    margin-left: 28px;
+    word-break: break-all;
+  }
+
+  .ref-list a:hover { text-decoration: underline; }
+
+  footer {
+    background: #fff;
+    border-top: 1px solid #e5e3dc;
+    padding: 1.2rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-size: 0.78rem;
+    color: #888780;
+  }
+
+  footer a { color: #185FA5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Goondas Act in India — Data Dashboard</h1>
+  <p>Preventive detentions under state Goondas Acts and related laws across India, based on NCRB annual reports and TN SCRB data (2016–2021).</p>
+  <div>
+    <span class="tag tag-blue">NCRB Prison Statistics India</span>
+    <span class="tag tag-blue">NCRB Crime in India</span>
+    <span class="tag tag-green">TN SCRB Crime Review</span>
+    <span class="tag tag-amber">Thakur Foundation Report 2022</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- KEY METRICS -->
+  <p class="section-label">Key national figures (2021)</p>
+  <div class="metric-grid">
+    <div class="metric">
+      <p class="metric-label">Total preventive detentions</p>
+      <p class="metric-value">1,10,151</p>
+      <p class="metric-sub">↑ 23.7% from 2020</p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">Under Goondas Acts (all states)</p>
+      <p class="metric-value">29,306</p>
+      <p class="metric-sub">State + Central Acts combined</p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">Under NSA (2021)</p>
+      <p class="metric-value">483</p>
+      <p class="metric-sub">Down from 741 peak in 2020</p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">Still in custody at year-end</p>
+      <p class="metric-value">24,500+</p>
+      <p class="metric-sub">Highest since NCRB tracking began (2017)</p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">Tamil Nadu share of all detenus</p>
+      <p class="metric-value highlight">51.2%</p>
+      <p class="metric-sub">Cited by Supreme Court & Madras HC</p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">TN detained under Goondas Act</p>
+      <p class="metric-value highlight">89%</p>
+      <p class="metric-sub">Of 3,194 total TN detentions (2021)</p>
+    </div>
+  </div>
+
+  <!-- TREND CHART -->
+  <p class="section-label">National trend — total preventive detentions</p>
+  <div class="chart-card">
+    <h3>All-India preventive detentions, 2017–2021</h3>
+    <p class="chart-sub">Source: NCRB Crime in India annual reports (2017–2021). NCRB began tracking this data from 2017.</p>
+    <div style="position:relative;height:260px;">
+      <canvas id="trendChart" role="img" aria-label="Bar chart showing India total preventive detentions from 2017 to 2021. Values: 2017: 67084, 2020: 89009, 2021: 110151.">India preventive detentions rose from 67,084 in 2017 to 1,10,151 in 2021.</canvas>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;display:inline-block;"></span>Total detentions</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#D85A30;display:inline-block;"></span>Still in custody at year-end</span>
+    </div>
+  </div>
+
+  <!-- STATE COMPARISON -->
+  <p class="section-label">State-wise detenus in prison (31 December each year)</p>
+  <div class="chart-card">
+    <h3>Tamil Nadu vs other top states — detenus in prison</h3>
+    <p class="chart-sub">Source: NCRB Prison Statistics India, 2016–2021. "Detenus" = persons in prison under preventive detention laws on the last day of the year.</p>
+    <div style="position:relative;height:300px;">
+      <canvas id="stateChart" role="img" aria-label="Line chart comparing detenus in prison in Tamil Nadu, Gujarat, and Jammu and Kashmir from 2016 to 2020.">Tamil Nadu consistently leads all states in preventive detenus in prison.</canvas>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#D85A30;display:inline-block;"></span>Tamil Nadu</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;display:inline-block;"></span>Gujarat</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#7F77DD;display:inline-block;"></span>Jammu & Kashmir</span>
+    </div>
+  </div>
+
+  <!-- TN SHARE -->
+  <p class="section-label">Tamil Nadu's share of all detenus in India</p>
+  <div class="chart-card">
+    <h3>Tamil Nadu as % of all preventive detenus in India</h3>
+    <p class="chart-sub">Source: NCRB Prison Statistics India. Madras HC noted TN has topped this list for over a decade.</p>
+
+    <div style="margin-top:0.5rem;">
+      <div class="bar-row">
+        <span class="bar-row-label">2016</span>
+        <div class="bar-track"><div class="bar-fill" style="width:47.9%;background:#D85A30;"></div></div>
+        <span class="bar-row-val">47.9%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row-label">2017</span>
+        <div class="bar-track"><div class="bar-fill" style="width:37.9%;background:#D85A30;"></div></div>
+        <span class="bar-row-val">37.9%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row-label">2018</span>
+        <div class="bar-track"><div class="bar-fill" style="width:31.1%;background:#D85A30;"></div></div>
+        <span class="bar-row-val">31.1%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row-label">2019</span>
+        <div class="bar-track"><div class="bar-fill" style="width:38.5%;background:#D85A30;"></div></div>
+        <span class="bar-row-val">38.5%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row-label">2020</span>
+        <div class="bar-track"><div class="bar-fill" style="width:39.8%;background:#D85A30;"></div></div>
+        <span class="bar-row-val">39.8%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row-label">2021</span>
+        <div class="bar-track"><div class="bar-fill" style="width:51.2%;background:#A32D2D;"></div></div>
+        <span class="bar-row-val" style="color:#A32D2D;font-weight:700;">51.2%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TN BREAKDOWN + AGE PROFILE -->
+  <div class="two-col">
+    <div class="chart-card">
+      <h3>TN detenus — age profile (2016–2020)</h3>
+      <p class="chart-sub">Source: NCRB Prison Statistics India; compiled in Thakur Foundation Report (2022)</p>
+      <div style="position:relative;height:220px;">
+        <canvas id="ageChart" role="img" aria-label="Stacked bar chart of Tamil Nadu detenu age groups from 2016 to 2020.">Most TN detenus fall in the 18–30 and 30–50 age bands.</canvas>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;display:inline-block;"></span>18–30</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#D85A30;display:inline-block;"></span>30–50</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a;"><span style="width:10px;height:10px;border-radius:2px;background:#888780;display:inline-block;"></span>50+</span>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3>TN detenus — education profile (2020)</h3>
+      <p class="chart-sub">Source: NCRB PSI 2020. 75% had not passed Class X.</p>
+      <div style="position:relative;height:220px;">
+        <canvas id="eduChart" role="img" aria-label="Pie chart of Tamil Nadu detenu education profile in 2020. Illiterate 36.8%, Below Class X 38.3%, rest educated.">75% of TN detenus in 2020 had not completed Class X.</canvas>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#5f5e5a;"><span style="width:8px;height:8px;border-radius:2px;background:#D85A30;display:inline-block;"></span>Illiterate 36.8%</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#5f5e5a;"><span style="width:8px;height:8px;border-radius:2px;background:#378ADD;display:inline-block;"></span>Below Class X 38.3%</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#5f5e5a;"><span style="width:8px;height:8px;border-radius:2px;background:#1D9E75;display:inline-block;"></span>Class X+ 16.5%</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#5f5e5a;"><span style="width:8px;height:8px;border-radius:2px;background:#7F77DD;display:inline-block;"></span>Graduate+ 8.3%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE ACTS TABLE -->
+  <p class="section-label">Goondas / Preventive Detention Acts by state</p>
+  <div class="chart-card">
+    <h3>State-level Goondas Acts across India</h3>
+    <p class="chart-sub">Source: Neha Singhal, Preventive Detention Laws in India (JILS); NCRB data; various HC judgments</p>
+    <table>
+      <thead>
+        <tr>
+          <th>State</th>
+          <th>Act name (short)</th>
+          <th>Year</th>
+          <th>Detention data availability</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tamil Nadu</strong></td>
+          <td>TN Goondas Act (Act 14 of 1982)</td>
+          <td>1982</td>
+          <td><span class="pill pill-green">NCRB + TN SCRB + RTI</span></td>
+        </tr>
+        <tr>
+          <td>Karnataka</td>
+          <td>Karnataka Goondas Act, 1985</td>
+          <td>1985</td>
+          <td><span class="pill pill-blue">NCRB (aggregated)</span></td>
+        </tr>
+        <tr>
+          <td>Telangana</td>
+          <td>Prevention of Dangerous Activities Act, 1986</td>
+          <td>1986</td>
+          <td><span class="pill pill-blue">NCRB (aggregated)</span></td>
+        </tr>
+        <tr>
+          <td>Andhra Pradesh</td>
+          <td>AP Goondas Act</td>
+          <td>—</td>
+          <td><span class="pill pill-blue">NCRB (aggregated)</span></td>
+        </tr>
+        <tr>
+          <td>Gujarat</td>
+          <td>Gujarat Prevention of Anti-Social Activities Act, 1985</td>
+          <td>1985</td>
+          <td><span class="pill pill-blue">NCRB (aggregated)</span></td>
+        </tr>
+        <tr>
+          <td>Maharashtra</td>
+          <td>Maharashtra Goondas Act / MCOC Act 1999 s.18</td>
+          <td>1999</td>
+          <td><span class="pill pill-blue">NCRB (aggregated)</span></td>
+        </tr>
+        <tr>
+          <td>Uttar Pradesh</td>
+          <td>UP Control of Goondas Act, 1970</td>
+          <td>1970</td>
+          <td><span class="pill pill-blue">NCRB (aggregated)</span></td>
+        </tr>
+        <tr>
+          <td>Kerala</td>
+          <td>Kerala Anti-Social Activities (Prevention) Act, 2007</td>
+          <td>2007</td>
+          <td><span class="pill pill-amber">NCRB partial</span></td>
+        </tr>
+        <tr>
+          <td>Rajasthan</td>
+          <td>Rajasthan Prevention of Anti-Social Activities Act, 2006</td>
+          <td>2006</td>
+          <td><span class="pill pill-amber">NCRB partial</span></td>
+        </tr>
+        <tr>
+          <td>All other states</td>
+          <td>National Security Act, 1980 (Central fallback)</td>
+          <td>1980</td>
+          <td><span class="pill pill-blue">NCRB (NSA column)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- REFERENCES -->
+  <p class="section-label">Data sources & references</p>
+  <div class="chart-card">
+    <h3>Primary sources</h3>
+    <p class="chart-sub">All data is from government publications or peer-reviewed research. See <code>docs/REFERENCES.md</code> in this repository for full citation details.</p>
+    <ul class="ref-list" style="margin-top:1rem;">
+      <li>
+        <span class="ref-num">1</span>
+        <strong>NCRB — Crime in India (Annual Report, 2017–2023)</strong><br>
+        Preventive detention chapter: state/UT-wise, act-wise tables. Ministry of Home Affairs, GoI.
+        <a href="https://ncrb.gov.in/en/crime-in-india-year-wise.html" target="_blank">ncrb.gov.in → Publications → Crime in India</a>
+      </li>
+      <li>
+        <span class="ref-num">2</span>
+        <strong>NCRB — Prison Statistics India (PSI, 1995–2022)</strong><br>
+        Detenus in prison by state; age, education, caste, religion profiles.
+        <a href="https://ncrb.gov.in/en/prison-statistics-india" target="_blank">ncrb.gov.in → Publications → Prison Statistics India</a>
+      </li>
+      <li>
+        <span class="ref-num">3</span>
+        <strong>TN SCRB — Crime Review (Annual)</strong><br>
+        Tamil Nadu-specific; district-wise and category-wise Goondas Act data.
+        <a href="https://scrb.tn.gov.in" target="_blank">scrb.tn.gov.in</a>
+      </li>
+      <li>
+        <span class="ref-num">4</span>
+        <strong>Akila R S (2022). Report on Preventive Detentions under TN Goondas Act.</strong><br>
+        Thakur Family Foundation. Most comprehensive compiled source (NCRB + SCRB + RTI).
+        <a href="https://www.thakur-foundation.org/upload/judgements/1649834297_Akila%20RS,%20Preventive%20Detentions%20under%20Tamil%20Nadu%20Goondas%20Act%20(1).pdf" target="_blank">Download PDF — Thakur Foundation</a>
+      </li>
+      <li>
+        <span class="ref-num">5</span>
+        <strong>Open Government Data Platform India — Crime in India 2022</strong>
+        <a href="https://www.data.gov.in/catalog/crime-india-2022" target="_blank">data.gov.in → Crime in India 2022</a>
+      </li>
+      <li>
+        <span class="ref-num">6</span>
+        <strong>Madras High Court, November 2022 (unreported)</strong><br>
+        Cited NCRB PSI data; confirmed TN = 51.2% of all preventive detenus in India.
+        <a href="https://indiankanoon.org" target="_blank">Searchable via indiankanoon.org</a>
+      </li>
+      <li>
+        <span class="ref-num">7</span>
+        <strong>Supreme Court of India — Savukku Shankar detention case (August 2024)</strong><br>
+        Counsel cited TN = 51% of national preventive detentions before a 3-judge bench.
+        <a href="https://www.etvbharat.com/en/!bharat/supreme-court-goonda-acts-tamil-nadu-enn24083006971" target="_blank">ETV Bharat report (Aug 30, 2024)</a>
+      </li>
+    </ul>
+  </div>
+
+</main>
+
+<footer>
+  Data compiled May 2026. Sources: NCRB (Ministry of Home Affairs, GoI), TN SCRB, Thakur Foundation. |
+  <a href="docs/REFERENCES.md">Full references (REFERENCES.md)</a> |
+  <a href="data/">Raw data (CSV files)</a>
+</footer>
+
+<script>
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } }
+};
+
+// Trend chart
+new Chart(document.getElementById('trendChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2017', '2020', '2021'],
+    datasets: [
+      {
+        label: 'Total detentions',
+        data: [67084, 89009, 110151],
+        backgroundColor: '#378ADD',
+        borderRadius: 4
+      },
+      {
+        label: 'Still in custody',
+        data: [18269, null, 24500],
+        backgroundColor: '#D85A30',
+        borderRadius: 4
+      }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { ticks: { autoSkip: false } },
+      y: {
+        ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v },
+        grid: { color: '#f1efe8' }
+      }
+    }
+  }
+});
+
+// State comparison
+new Chart(document.getElementById('stateChart'), {
+  type: 'line',
+  data: {
+    labels: ['2016','2017','2018','2019','2020','2021'],
+    datasets: [
+      {
+        label: 'Tamil Nadu',
+        data: [1481, 810, 741, 1240, 1430, 1775],
+        borderColor: '#D85A30',
+        backgroundColor: 'rgba(216,90,48,0.08)',
+        tension: 0.3,
+        fill: true,
+        pointRadius: 4,
+        borderDash: []
+      },
+      {
+        label: 'Gujarat',
+        data: [null, 345, 452, 698, 1169, null],
+        borderColor: '#378ADD',
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        pointRadius: 4,
+        borderDash: [4,3]
+      },
+      {
+        label: 'Jammu & Kashmir',
+        data: [432, 212, null, 404, null, null],
+        borderColor: '#7F77DD',
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        pointRadius: 4,
+        borderDash: [2,3]
+      }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      y: {
+        grid: { color: '#f1efe8' },
+        ticks: { callback: v => v.toLocaleString() }
+      }
+    }
+  }
+});
+
+// Age stacked bar
+new Chart(document.getElementById('ageChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2016','2017','2018','2019','2020'],
+    datasets: [
+      {
+        label: '18–30',
+        data: [641, 370, 325, 557, 666],
+        backgroundColor: '#378ADD',
+        borderRadius: 0
+      },
+      {
+        label: '30–50',
+        data: [734, 385, 363, 531, 637],
+        backgroundColor: '#D85A30',
+        borderRadius: 0
+      },
+      {
+        label: '50+',
+        data: [106, 55, 53, 152, 127],
+        backgroundColor: '#888780',
+        borderRadius: 4
+      }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { stacked: true, ticks: { autoSkip: false } },
+      y: { stacked: true, grid: { color: '#f1efe8' } }
+    }
+  }
+});
+
+// Education donut
+new Chart(document.getElementById('eduChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Illiterate', 'Below Class X', 'Class X+', 'Graduate+'],
+    datasets: [{
+      data: [527, 549, 236, 118],
+      backgroundColor: ['#D85A30','#378ADD','#1D9E75','#7F77DD'],
+      borderWidth: 1,
+      borderColor: '#fff'
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    cutout: '60%',
+    plugins: { legend: { display: false } }
+  }
+});
+</script>
+</body>
+</html>
